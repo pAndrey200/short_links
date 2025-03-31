@@ -23,16 +23,13 @@ def generate_short_code(length: int = 6) -> str:
     return ''.join(secrets.choice(chars) for _ in range(length))
 
 def normalize_link(url: str) -> str:
-    parsed = urlparse(url)
-    netloc = parsed.netloc
-    
-    if netloc.startswith('www.'):
-        netloc = netloc[4:]
-    
-    path = parsed.path.rstrip('/')
-    result = f"{netloc}{path}"
-    
-    return result
+    if '://' in url:
+        url = url.split('://', 1)[1]
+    if url.startswith('www.'):
+        url = url[4:]
+    if url.endswith('/'):
+        url = url.rstrip('/')
+    return url
 
 @router.post("/shorten", response_model=LinkResponse)
 async def create_short_link(
